@@ -3,9 +3,18 @@ import { Head } from '@inertiajs/react';
 import ChatSideBar from './ChatSideBar';
 import ChatHeader from './ChatHeader';
 import ChatMessage from './ChatMessage';
+import { useEffect } from 'react';
 
 export default function Home(props) {
     console.log(props);
+    Echo.private(`message-sent.${props.auth.user.id}.${props.receiver?.id}`)
+    .listen('MessageSent', (e) => {
+    console.log(e);
+});
+
+useEffect(() => {
+    console.log(props);
+})
     return (
         <AuthenticatedLayout
             user={props.auth.user}
@@ -28,7 +37,7 @@ export default function Home(props) {
                             <div className='basis-2/6 border-r-2 border-gray-300'>
                                <ChatSideBar recentMessages={props.recentMessages} />
                             </div>
-                            <div className='relative basis-4/6 flex flex-col h-full overflow-auto '>
+                            <div className='relative basis-4/6 flex flex-col h-full overflow-y-auto '>
                                 <ChatHeader receiver={props.receiver} /> 
                                 <ChatMessage receiver={props.receiver} messages={props.messages} user={props.auth.user} />
                             </div>

@@ -14,16 +14,17 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(<App {...props} />);
+
     },
     progress: {
         color: '#4B5563',
     },
-});
-// Echo.private('message-sent.1.2')
-//     .listen('MessageSent', (e) => {
-//         console.log(e);
-//     });
-    
+}); 
+
+// Echo.private(`message-sent.${props.auth?.user?.id}.${props?.receiver?.id}`)
+// .listen('MessageSent', (e) => {
+// console.log(e);
+// });
 
 /* Presence Channel */
 // Echo.join(`group-channel.1`)

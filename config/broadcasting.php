@@ -41,7 +41,7 @@ return [
                 'port' => 6001,
                 'scheme' => 'http',
                 'encrypted' => true,
-                // 'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+                'useTLS' => true, //env('PUSHER_SCHEME', 'https') === 'https',
             ],
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html

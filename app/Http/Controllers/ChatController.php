@@ -40,6 +40,7 @@ class ChatController extends Controller
                 'receiver_id' => $receiver_id,
                 'message' => $request->message,
             ]);
+            event(new MessageSent($request->message, $request->user()->id, $receiver_id));
             return Redirect::route('chat.index', $receiver_id);
         } catch (\Throwable $th) {
             return Redirect::route('chat.index', $receiver_id);

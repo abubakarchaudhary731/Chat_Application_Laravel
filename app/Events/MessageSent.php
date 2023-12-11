@@ -14,12 +14,16 @@ class MessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $message;
+    public $sender_id;
+    public $receiver_id;
     /**
      * Create a new event instance.
      */
-    public function __construct($message)
+    public function __construct($message , $sender_id , $receiver_id)
     {
         $this->message = $message;
+        $this->sender_id = $sender_id;
+        $this->receiver_id = $receiver_id;
     }
 
     /**
@@ -30,7 +34,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('message-sent.1.2'),
+            new PrivateChannel('message-sent.' . $this->sender_id . '.' . $this->receiver_id),
         ];
     }
 }
