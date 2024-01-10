@@ -11,40 +11,49 @@ use Illuminate\Support\Facades\Redirect;
 
 class ChatController extends Controller
 {
-    public function __construct(private ChatRepository $chat)
+    private ChatRepository $chat;
+
+    public function __construct(ChatRepository $chat)
     {
         $this->chat = $chat;
     }
-    
+
     public function index(Request $request, ?int $receiver_id = null)
     {
-        $messages = empty($receiver_id) ? [] : $this->chat->getUserMessages((int) $request->user()->id, (int) $receiver_id);
-        return inertia::render('Chat/Home', [
+        $userId = (int) $request->user()->id;
+        $messages = $receiver_id ? $this->chat->getUserMessages($userId, (int) $receiver_id) : [];
+        
+        return Inertia::render('Chat/Home', [
             'messages' => $messages,
-            'recentMessages' => $this->chat->getRecentUsersWithMessages($request->user()->id),
-            'receiver' => User::find($receiver_id)
+            'recentMessages' => $this->chat->getRecentUsersWithMessages($userId),
+            'receiver' => User::find($receiver_id),
         ]);
     }
 
     public function store(Request $request, ?int $receiver_id = null)
     {
-       $request->validate([
-           'message' => 'required|string',
-       ]);
+        $request->validate([
+            'message' => 'required|string',
+        ]);
+
         if (empty($receiver_id)) {
-            return;
+            return redirect()->route('chat.index'); // Redirect to default chat page
         }
+
         try {
             $this->chat->sendMessages([
                 'sender_id' => (int) $request->user()->id,
                 'receiver_id' => $receiver_id,
                 'message' => $request->message,
             ]);
+
             event(new MessageSent($request->message, $request->user()->id, $receiver_id));
-            return Redirect::route('chat.index', $receiver_id);
+
+            return redirect()->route('chat.index', $receiver_id);
         } catch (\Throwable $th) {
-            return Redirect::route('chat.index', $receiver_id);
+            // Handle the exception (log it, notify the user, etc.)
+            return redirect()->route('chat.index', $receiver_id)
+                ->with('error', 'Failed to send message');
         }
     }
-
 }
