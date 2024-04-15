@@ -19,7 +19,7 @@ class ChatController extends Controller
     }
 
     public function index(Request $request, ?int $receiver_id = null)
-    {
+    { 
         $userId = (int) $request->user()->id;
         $messages = $receiver_id ? $this->chat->getUserMessages($userId, (int) $receiver_id) : [];
         
